@@ -1,0 +1,63 @@
+resources:
+  jobs:
+    historical_job_error_classification:
+      name: historical-job-error-classification
+      queue:
+        enabled: true
+
+      job_clusters:
+        - job_cluster_key: ml-cluster-classic
+          new_cluster:
+            spark_version: 15.4.x-scala2.12
+            runtime_engine: PHOTON
+            node_type_id: Standard_D4ds_v5
+            is_single_node: false
+            autotermination_minutes: 120
+            data_security_mode: DATA_SECURITY_MODE_DEDICATED
+            kind: CLASSIC_PREVIEW
+            autoscale: 
+              min_workers: 1
+              max_workers: 5
+
+      tasks:
+        - task_key: get_job_error_details_hist
+          job_cluster_key: ml-cluster-classic
+          notebook_task:
+            notebook_path: '../Get Job Errors.ipynb'
+            base_parameters:
+              from_date: 'date_sub(current_date(), 365)'
+        
+        - task_key: perform_initial_clustering
+          job_cluster_key: ml-cluster-classic
+          notebook_task:
+            notebook_path: '../Run Initial Topic Clustering.ipynb'
+          depends_on: 
+            - task_key: get_job_error_details_hist
+        
+        - task_key: use_ai_function_classifier
+          job_cluster_key: ml-cluster-classic
+          notebook_task: 
+            notebook_path: '../Run AI Functions.ipynb'
+          depends_on: 
+            - task_key: perform_initial_clustering
+
+      parameters:
+        - name: target_catalog
+          default: "field_demos"
+        - name: target_schema
+          default: "tauherng"
+        - name: target_table
+          default: "job_errors"
+        - name: embeddings_table
+          default: "job_error_embeddings"
+        - name: job_error_classes_table
+          default: "job_error_cluster_descriptions"
+        - name: from_date
+          default: "date_sub(current_date(), 365)"
+
+
+
+
+          
+
+

@@ -1,0 +1,41 @@
+resources:
+  jobs:
+    recurring_job_error_classification:
+      name: recurring-job-error-classification
+      queue:
+        enabled: true
+
+      tasks:
+        - task_key: get_job_error_details_incremental
+          notebook_task:
+            notebook_path: '../Get Job Errors.ipynb'
+            base_parameters:
+              from_date: 'date_sub(current_date(), 3)'
+        
+        - task_key: use_ai_function_classifier
+          notebook_task: 
+            notebook_path: '../Run AI Functions.ipynb'
+            base_parameters:
+              job_error_classes_table: "job_error_cluster_descriptions"
+          depends_on:
+            - task_key: get_job_error_details_incremental
+
+      parameters:
+        - name: target_catalog
+          default: "field_demos"
+        - name: target_schema
+          default: "tauherng"
+        - name: target_table
+          default: "job_errors"
+        - name: embeddings_table
+          default: "job_error_embeddings"
+        - name: job_error_classes_table
+          default: "job_error_cluster_descriptions"
+        - name: from_date
+          default: "date_sub(current_date(), 3)"
+
+      trigger:
+        # Run this job every day, exactly one day from the last run; see https://docs.databricks.com/api/workspace/jobs/create#trigger
+        periodic:
+          interval: 1
+          unit: DAYS
