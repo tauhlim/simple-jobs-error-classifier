@@ -20,3 +20,14 @@ _Sidenote: Databricks Team - Assistant API? 🥺_
 
 # Disclaimer
 This code is experimental that is not yet supported by Databricks. It should not be used in production environments and is provided strictly for educational and experimental purposes.
+
+# Getting Started
+1. Clone this repository to your Databricks workspace
+1. Update the parameters in the yaml files: [historical job yaml](./jobs-error-classifier/resources/historical-job-error-classification.job.yml) and [incremental job yaml](recurring-job-error-classification.job.yml)
+1. Use the [Bundles in Workspace](https://docs.databricks.com/aws/en/dev-tools/bundles/workspace) feature to deploy the Databricks Jobs
+1. Run the historical job
+
+> ⚠️ **Important Notes**
+> 1. The historical job defaults to pulling a year's worth of job task errors, for which detailed logs may or may not still exist. 
+> 1. This example uses Databricks-hosted models (GPT-OSS, Claude, etc) to perform the AI Functions. You can swap these out by modifying the code accordingly. 
+ 
