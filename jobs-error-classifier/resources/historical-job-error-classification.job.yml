@@ -25,7 +25,7 @@ resources:
           notebook_task:
             notebook_path: '../Get Job Errors.ipynb'
             base_parameters:
-              from_date: 'date_sub(current_date(), 365)'
+              from_date: 'date_sub(current_date(), 60)'
         
         - task_key: perform_initial_clustering
           job_cluster_key: ml-cluster-classic
@@ -53,7 +53,7 @@ resources:
         - name: job_error_classes_table
           default: "job_error_cluster_descriptions"
         - name: from_date
-          default: "date_sub(current_date(), 365)"
+          default: "date_sub(current_date(), 60)"
 
 
 
